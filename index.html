@@ -1,0 +1,102 @@
+<!doctype html>
+<html ng-app="app">
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+	</head>
+
+	<body>
+		<div ng-controller="myCtrl">
+			<my-pagination page-option="option"></my-pagination>
+		</div>
+		<script src="js/angular.js"></script>
+		<script type="text/javascript">
+			var app = angular.module('app', ['myModule'])
+
+			app.controller('myCtrl', function($scope) {
+
+				//设置分页的参数
+				$scope.option = {
+					now: 1, //当前页数
+					all: 20, //总页数
+					count: 5, //最多显示的页数，默认为10
+					//点击页数的回调函数，参数page为点击的页数
+					click: function(page) {
+						// console.log(page);
+						//这里可以写跳转到某个页面等...
+					}
+				}
+			});
+			angular.module('myModule', []).directive('myPagination', function() {
+				return {
+					restrict: 'EA',
+					replace: true,
+					scope: {
+						option: '=pageOption'
+					},
+					template: '<ul class="pagination">' +
+						'<li ng-click="show(p)" ng-repeat="p in page" class="{{option.now==p?\'active\':\'\'}}">' +
+						'<a href="javascript:;">{{p}}</a>' +
+						'</li>' +
+						'</ul>',
+					link: function($scope) {
+						//得到显示页数的数组
+						$scope.page = pac($scope.option.now, $scope.option.all, $scope.option.count);
+
+						//绑定点击事件
+						$scope.show = function(page) {
+							if(page == '«') {
+								page = $scope.option.now- 1;
+							} else if(page == '»') {
+								page = $scope.option.now + 1;
+							}
+							if(page < 1) page = 1;
+							else if(page > $scope.option.all) page = $scope.option.all;
+							//点击相同的页数 不执行点击事件
+							if(page == $scope.option.now) return;
+							if($scope.option.click && typeof $scope.option.click === 'function') {
+								$scope.option.click(page);
+								$scope.option.now = page;
+								$scope.page = pac($scope.option.now, $scope.option.all, $scope.option.count);
+							}
+						};
+
+						//返回页数范围（用来遍历）
+						function pac(now, all, count) {
+							//计算显示的页数
+							var from = now - parseInt(count / 2);
+							console.log(from)
+							var to = now + parseInt(count / 2) + (count % 2) - 1;
+							//显示的页数容处理
+							if(from <= 0) {
+								from = 1;
+								to = from + count - 1;
+								if(to > all) {
+									to = all;
+								}
+							}
+							if(to > all) {
+								to = all;
+								from = to - count + 1;
+								if(from <= 0) {
+									from = 1;
+								}
+							}
+							var range = [];
+							for(var i = from; i <= to; i++) {
+								range.push(i);
+							}
+							range.push('»');
+							range.unshift('«');
+							return range;
+						}
+
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>
