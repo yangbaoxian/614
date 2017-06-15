@@ -16,16 +16,14 @@
 			var app = angular.module('app', ['myModule'])
 
 			app.controller('myCtrl', function($scope) {
-
-				//设置分页的参数
 				$scope.option = {
 					now: 1, //当前页数
 					all: 20, //总页数
-					count: 5, //最多显示的页数，默认为10
-					//点击页数的回调函数，参数page为点击的页数
+					count: 5, //最多显示的页数
+					//点击页数的回调函数
 					click: function(page) {
-						// console.log(page);
-						//这里可以写跳转到某个页面等...
+						console.log(page);
+						
 					}
 				}
 			});
@@ -63,13 +61,13 @@
 							}
 						};
 
-						//返回页数范围（用来遍历）
+					
 						function pac(now, all, count) {
 							//计算显示的页数
 							var from = now - parseInt(count / 2);
 							console.log(from)
 							var to = now + parseInt(count / 2) + (count % 2) - 1;
-							//显示的页数容处理
+						
 							if(from <= 0) {
 								from = 1;
 								to = from + count - 1;
